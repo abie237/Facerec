@@ -1,0 +1,2 @@
+course_code,course_name,session_id,session_date,student_name,status,timestamp_marked,confidence
+TEST101,Self-Test Course,1,2026-06-29,abiel,present,2026-06-29 10:28:36,0.9300
