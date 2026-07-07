@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Attendance — Face Attendance System{% endblock %}
+
+{% block content %}
+<h1>📷 Live Attendance</h1>
+
+<!-- Course selector and controls -->
+<div class="card">
+    <h2>Session Controls</h2>
+
+    {% if not state.running %}
+    <form method="POST" action="{{ url_for('start_session') }}">
+        <div class="form-row">
+            <div class="form-group">
+                <label for="course_id">Select Course</label>
+                <select name="course_id" id="course_id" class="form-control" required>
+                    {% for course in courses %}
+                        <option value="{{ course.course_id }}">
+                            {{ course.course_code }} — {{ course.course_name }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group form-group-btn">
+                <button type="submit" class="btn btn-success btn-lg">
+                    ▶️ Start Attendance
+                </button>
+            </div>
+        </div>
+    </form>
+    {% else %}
+    <div class="session-info">
+        <div class="session-badge">
+            🟢 Session <strong>{{ state.session_id }}</strong> active —
+            <strong>{{ state.course_code }}</strong> {{ state.course_name }}
+        </div>
+        <form method="POST" action="{{ url_for('stop_session') }}" style="display:inline">
+            <button type="submit" class="btn btn-danger btn-lg">
+                ⏹️ Stop Attendance
+            </button>
+        </form>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Live metrics (updated by JS polling) -->
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-value" id="present-count">{{ state.present_count }}</div>
+        <div class="metric-label">Students Present</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value" id="session-id">
+            {{ state.session_id if state.session_id else '—' }}
+        </div>
+        <div class="metric-label">Session ID</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value" id="status-dot">
+            {{ '🟢 Running' if state.running else '🔴 Stopped' }}
+        </div>
+        <div class="metric-label">Status</div>
+    </div>
+</div>
+
+<!-- Present students list (updated by JS polling) -->
+<div class="card" id="present-list-card" style="{% if not state.marked_present %}display:none{% endif %}">
+    <h3>✅ Present This Session</h3>
+    <div id="present-list" class="student-tags">
+        {% for name in state.marked_present %}
+            <span class="tag tag-success">{{ name }}</span>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Live video stream -->
+<div class="card">
+    <h2>📹 Live Camera Feed</h2>
+    {% if state.running %}
+        <p class="hint">
+            Green box = recognized &amp; enrolled student.
+            Red box = unknown face.
+            The system marks each student present automatically when detected.
+        </p>
+        <div class="video-container">
+            <img src="{{ url_for('video_feed') }}"
+                 id="video-feed"
+                 alt="Live camera feed"
+                 class="video-stream">
+        </div>
+    {% else %}
+        <div class="video-placeholder">
+            <p>📷 Start a session above to enable the live camera feed.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- JS: poll /get_status every 2 seconds to update count + present list -->
+<script>
+    function updateStatus() {
+        fetch('/get_status')
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('present-count').textContent = data.present_count;
+                document.getElementById('session-id').textContent = data.session_id || '—';
+                document.getElementById('status-dot').textContent = data.running ? '🟢 Running' : '🔴 Stopped';
+
+                const listCard = document.getElementById('present-list-card');
+                const listDiv = document.getElementById('present-list');
+
+                if (data.marked_present && data.marked_present.length > 0) {
+                    listCard.style.display = 'block';
+                    listDiv.innerHTML = data.marked_present
+                        .map(name => `<span class="tag tag-success">${name}</span>`)
+                        .join('');
+                } else {
+                    listCard.style.display = 'none';
+                }
+            })
+            .catch(err => console.log('Status poll error:', err));
+    }
+
+    // Poll every 2 seconds
+    setInterval(updateStatus, 2000);
+</script>
+
+{% endblock %}

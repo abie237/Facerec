@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}Reports — Face Attendance System{% endblock %}
+
+{% block content %}
+<h1>📊 Attendance Reports</h1>
+
+{% if not sessions %}
+    <div class="card">
+        <p class="empty-state">
+            No sessions recorded yet.
+            Go to <a href="{{ url_for('attendance') }}">📷 Attendance</a> to run a session first.
+        </p>
+    </div>
+{% else %}
+    <div class="card">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Session ID</th>
+                    <th>Course</th>
+                    <th>Date</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                <tr>
+                    <td><strong>#{{ session.session_id }}</strong></td>
+                    <td>
+                        <strong>{{ session.course_code }}</strong><br>
+                        <small>{{ session.course_name }}</small>
+                    </td>
+                    <td>{{ session.session_date }}</td>
+                    <td>{{ session.start_time or '—' }}</td>
+                    <td>
+                        {% if session.end_time == 'In progress' %}
+                            <span class="badge badge-success">In progress</span>
+                        {% else %}
+                            {{ session.end_time }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="{{ url_for('report_detail', session_id=session.session_id) }}"
+                           class="btn btn-sm btn-primary">
+                            View
+                        </a>
+                        <a href="{{ url_for('download_report', session_id=session.session_id) }}"
+                           class="btn btn-sm btn-secondary">
+                            📥 CSV
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endif %}
+{% endblock %}

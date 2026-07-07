@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% block title %}Session {{ session.session_id }} Report{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>📋 Session {{ session.session_id }} — {{ session.course_code }}</h1>
+    <a href="{{ url_for('reports') }}" class="btn btn-secondary">← Back to Reports</a>
+</div>
+
+<!-- Session summary metrics -->
+<div class="metrics-row">
+    <div class="metric-card">
+        <div class="metric-value">{{ present_count }}</div>
+        <div class="metric-label">Present</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ total - present_count }}</div>
+        <div class="metric-label">Absent</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">{{ total }}</div>
+        <div class="metric-label">Total Enrolled</div>
+    </div>
+    <div class="metric-card">
+        <div class="metric-value">
+            {% if total > 0 %}
+                {{ "%.0f"|format(present_count / total * 100) }}%
+            {% else %}
+                —
+            {% endif %}
+        </div>
+        <div class="metric-label">Attendance Rate</div>
+    </div>
+</div>
+
+<!-- Session details -->
+<div class="card">
+    <div class="detail-grid">
+        <div><strong>Course:</strong> {{ session.course_code }} — {{ session.course_name }}</div>
+        <div><strong>Date:</strong> {{ session.session_date }}</div>
+        <div><strong>Start:</strong> {{ session.start_time or '—' }}</div>
+        <div><strong>End:</strong> {{ session.end_time or 'In progress' }}</div>
+    </div>
+</div>
+
+<!-- Attendance table -->
+<div class="card">
+    <div class="card-header-row">
+        <h2>Attendance Record</h2>
+        <a href="{{ url_for('download_report', session_id=session.session_id) }}"
+           class="btn btn-primary">
+            📥 Download CSV
+        </a>
+    </div>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Status</th>
+                <th>Time Marked</th>
+                <th>Confidence</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in rows %}
+            <tr class="{% if row.status == 'Present' %}row-present{% else %}row-absent{% endif %}">
+                <td><strong>{{ row.student_name }}</strong></td>
+                <td>
+                    {% if row.status == 'Present' %}
+                        <span class="badge badge-success">✅ Present</span>
+                    {% else %}
+                        <span class="badge badge-danger">❌ Absent</span>
+                    {% endif %}
+                </td>
+                <td>{{ row.timestamp }}</td>
+                <td>{{ row.confidence }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

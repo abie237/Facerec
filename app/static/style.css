@@ -1,0 +1,416 @@
+/* ================================================================
+   Face Attendance System — Flask UI Styles
+   ================================================================ */
+
+/* Reset + base */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: #f0f2f5;
+    color: #1a1a2e;
+    min-height: 100vh;
+}
+
+a { color: #4361ee; text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+/* ----------------------------------------------------------------
+   Navbar
+   ---------------------------------------------------------------- */
+.navbar {
+    background: #1a1a2e;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.nav-brand {
+    color: #fff;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+}
+
+.nav-links { display: flex; gap: 0.25rem; }
+
+.nav-links a {
+    color: #a0aec0;
+    padding: 0.4rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    transition: background 0.15s, color 0.15s;
+}
+
+.nav-links a:hover,
+.nav-links a.active {
+    background: #4361ee;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* ----------------------------------------------------------------
+   Main container
+   ---------------------------------------------------------------- */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+h1 { font-size: 1.8rem; margin-bottom: 1.5rem; color: #1a1a2e; }
+h2 { font-size: 1.2rem; margin-bottom: 1rem; color: #2d3748; }
+h3 { font-size: 1rem; margin-bottom: 0.75rem; color: #4a5568; }
+
+/* ----------------------------------------------------------------
+   Alerts (flash messages)
+   ---------------------------------------------------------------- */
+.alert {
+    padding: 0.8rem 1.2rem;
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    font-size: 0.9rem;
+    border-left: 4px solid;
+}
+
+.alert-success { background: #f0fff4; color: #276749; border-color: #38a169; }
+.alert-error   { background: #fff5f5; color: #c53030; border-color: #e53e3e; }
+.alert-warning { background: #fffbeb; color: #b7791f; border-color: #d69e2e; }
+.alert-info    { background: #ebf8ff; color: #2b6cb0; border-color: #4299e1; }
+
+/* ----------------------------------------------------------------
+   Cards
+   ---------------------------------------------------------------- */
+.card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.card-header-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.card-header-row h2 { margin-bottom: 0; }
+
+/* ----------------------------------------------------------------
+   Home page
+   ---------------------------------------------------------------- */
+.hero { text-align: center; padding: 2rem 0; }
+.hero h1 { font-size: 2.2rem; margin-bottom: 0.5rem; }
+.subtitle { color: #718096; font-size: 1.05rem; margin-bottom: 2.5rem; }
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    text-align: left;
+}
+
+.card-grid .card {
+    transition: transform 0.15s, box-shadow 0.15s;
+    cursor: pointer;
+}
+
+.card-grid .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    text-decoration: none;
+}
+
+.card-icon { font-size: 2.5rem; margin-bottom: 0.75rem; }
+.card-primary  { border-top: 4px solid #4361ee; }
+.card-secondary { border-top: 4px solid #06d6a0; }
+.card-tertiary { border-top: 4px solid #f72585; }
+.card-grid .card p { color: #718096; font-size: 0.9rem; line-height: 1.5; }
+
+.tech-stack { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
+
+/* ----------------------------------------------------------------
+   Metrics
+   ---------------------------------------------------------------- */
+.metrics-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.metric-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+}
+
+.metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #4361ee;
+    line-height: 1;
+}
+
+.metric-label {
+    font-size: 0.8rem;
+    color: #718096;
+    margin-top: 0.4rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ----------------------------------------------------------------
+   Buttons
+   ---------------------------------------------------------------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.5rem 1.1rem;
+    border-radius: 8px;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: opacity 0.15s, transform 0.1s;
+    text-decoration: none;
+}
+
+.btn:hover { opacity: 0.88; transform: translateY(-1px); text-decoration: none; }
+.btn:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+.btn-primary   { background: #4361ee; color: #fff; }
+.btn-secondary { background: #718096; color: #fff; }
+.btn-success   { background: #38a169; color: #fff; }
+.btn-danger    { background: #e53e3e; color: #fff; }
+.btn-lg { padding: 0.7rem 1.5rem; font-size: 1rem; }
+.btn-sm { padding: 0.3rem 0.7rem; font-size: 0.8rem; }
+.btn-full { width: 100%; justify-content: center; }
+
+/* ----------------------------------------------------------------
+   Forms
+   ---------------------------------------------------------------- */
+.form-group { margin-bottom: 1rem; }
+.form-group label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    margin-bottom: 0.35rem;
+    color: #4a5568;
+}
+.form-control {
+    width: 100%;
+    padding: 0.5rem 0.8rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    transition: border-color 0.15s;
+    background: #fff;
+}
+.form-control:focus { outline: none; border-color: #4361ee; }
+
+.form-row {
+    display: flex;
+    gap: 1rem;
+    align-items: flex-end;
+}
+.form-row .form-group { flex: 1; margin-bottom: 0; }
+.form-group-btn { flex: 0 0 auto; }
+
+/* ----------------------------------------------------------------
+   Video
+   ---------------------------------------------------------------- */
+.video-container {
+    background: #000;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 1rem;
+}
+
+.video-stream {
+    width: 100%;
+    max-width: 800px;
+    display: block;
+    margin: 0 auto;
+}
+
+.video-placeholder {
+    background: #1a1a2e;
+    border-radius: 10px;
+    padding: 3rem;
+    text-align: center;
+    color: #a0aec0;
+    margin-top: 1rem;
+}
+
+/* ----------------------------------------------------------------
+   Tables
+   ---------------------------------------------------------------- */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.table th {
+    background: #f7fafc;
+    padding: 0.65rem 0.9rem;
+    text-align: left;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #718096;
+    border-bottom: 2px solid #e2e8f0;
+}
+
+.table td {
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid #f0f2f5;
+    vertical-align: middle;
+}
+
+.table tr:last-child td { border-bottom: none; }
+.row-present { background: #f0fff4; }
+.row-absent  { background: #fff5f5; }
+
+/* ----------------------------------------------------------------
+   Badges and tags
+   ---------------------------------------------------------------- */
+.badge {
+    display: inline-block;
+    padding: 0.25rem 0.65rem;
+    border-radius: 99px;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+
+.badge-success { background: #c6f6d5; color: #276749; }
+.badge-danger  { background: #fed7d7; color: #c53030; }
+
+.tag {
+    display: inline-block;
+    padding: 0.2rem 0.6rem;
+    border-radius: 6px;
+    font-size: 0.82rem;
+    margin: 0.2rem;
+}
+
+.tag-success { background: #c6f6d5; color: #276749; }
+.tag-primary { background: #ebf4ff; color: #3182ce; }
+
+.student-tags { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+/* ----------------------------------------------------------------
+   Layout helpers
+   ---------------------------------------------------------------- */
+.two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+    .two-col { grid-template-columns: 1fr; }
+    .form-row { flex-direction: column; }
+    .metrics-row { grid-template-columns: repeat(2, 1fr); }
+    .nav-links a { padding: 0.4rem 0.5rem; font-size: 0.8rem; }
+}
+
+.hint { font-size: 0.85rem; color: #718096; margin-bottom: 0.75rem; }
+.empty-state { color: #a0aec0; text-align: center; padding: 1.5rem; }
+.empty-state-inline { color: #a0aec0; font-size: 0.85rem; font-style: italic; }
+
+/* ----------------------------------------------------------------
+   Session info bar
+   ---------------------------------------------------------------- */
+.session-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.session-badge {
+    background: #f0fff4;
+    border: 1.5px solid #38a169;
+    border-radius: 8px;
+    padding: 0.5rem 1rem;
+    color: #276749;
+    font-size: 0.9rem;
+}
+
+/* ----------------------------------------------------------------
+   Manage courses
+   ---------------------------------------------------------------- */
+.course-list { list-style: none; padding: 0; }
+.course-list li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f0f2f5;
+    font-size: 0.9rem;
+}
+.course-list li:last-child { border-bottom: none; }
+.course-list small { color: #a0aec0; }
+
+.checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 0.4rem;
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.75rem;
+    max-height: 240px;
+    overflow-y: auto;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.88rem;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+}
+
+.checkbox-label:hover { background: #f7fafc; }
+
+.enrollment-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid #f0f2f5;
+}
+
+.enrollment-row:last-child { border-bottom: none; }
+.enrollment-course { min-width: 200px; font-size: 0.9rem; }
+.enrollment-students { flex: 1; display: flex; flex-wrap: wrap; gap: 0.3rem; }
+
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.page-header h1 { margin-bottom: 0; }

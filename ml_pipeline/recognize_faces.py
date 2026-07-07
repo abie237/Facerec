@@ -22,6 +22,21 @@ WHY KNN INSTEAD OF SVM:
   confirmed works correctly for this dataset. This is a deliberate,
   diagnosed choice, not just "whichever scored higher on the test split."
 
+WHY THERE'S ALSO A SEPARATE DISTANCE CHECK (not just confidence):
+  KNN always returns the NEAREST registered student, even for a face that
+  doesn't match anyone -- it has no built-in concept of "none of the
+  above." predict_proba()'s confidence is RELATIVE (how much do nearby
+  neighbors agree with each other), not ABSOLUTE (how close is this face
+  to anyone at all). A stranger's face can score confidence=1.0 if their
+  encoding happens to be closest to one student even by a wide margin.
+
+  To fix this, every prediction is also checked against the ACTUAL
+  Euclidean distance to its nearest neighbor (via knn_model.kneighbors()).
+  If that absolute distance exceeds MAX_DISTANCE_THRESHOLD, the face is
+  rejected as "Unknown" regardless of how confident the relative
+  prediction was. This mirrors the same distance rule of thumb already
+  used in diagnose_distance.py.
+
 Run this AFTER encode_faces.py and train_classifier.py have been run.
 
 Controls:
@@ -57,6 +72,19 @@ LABEL_ENCODER_PATH = MODELS_DIR / "label_encoder.pkl"
 # required delicate tuning.
 CONFIDENCE_THRESHOLD = 0.5
 
+# ABSOLUTE distance threshold (separate from the relative confidence
+# above). face_recognition's own documentation treats ~0.6 as a rough
+# rule of thumb for "same person" vs "different person" on its 128-d
+# encodings. A face whose nearest training example is farther than this
+# is rejected as Unknown EVEN IF KNN's relative confidence was 1.0,
+# since KNN has no concept of "doesn't match anyone" on its own.
+#
+# Tune this by running diagnose_distance.py on a few known and a few
+# unknown faces and looking at where the gap actually falls for YOUR
+# camera/lighting setup -- 0.6 is a reasonable starting point, not a
+# universal constant.
+MAX_DISTANCE_THRESHOLD = 0.6
+
 # face_recognition detection model: "hog" (CPU, fast) or "cnn" (GPU, accurate)
 DETECTION_MODEL = "hog"
 
@@ -85,7 +113,7 @@ def recognize_frame(frame, knn_model, label_encoder):
     Detect and classify all faces in a single BGR frame.
 
     Returns a list of dicts: [{"name": str, "confidence": float,
-    "box": (top, right, bottom, left)}, ...]
+    "distance": float, "box": (top, right, bottom, left)}, ...]
     """
     # Resize for faster detection, convert BGR -> RGB for face_recognition
     small_frame = cv2.resize(frame, (0, 0), fx=FRAME_RESIZE_SCALE, fy=FRAME_RESIZE_SCALE)
@@ -105,25 +133,40 @@ def recognize_frame(frame, knn_model, label_encoder):
         best_idx = int(np.argmax(probabilities))
         confidence = float(probabilities[best_idx])
 
-        if confidence >= CONFIDENCE_THRESHOLD:
+        # ---- ABSOLUTE distance check (separate from relative confidence) ----
+        # kneighbors() returns the actual Euclidean distance to the single
+        # nearest stored training encoding, regardless of which class it
+        # belongs to. This is the check that catches strangers: even if
+        # KNN's relative confidence is 1.0, a large nearest-neighbor
+        # distance means "nobody in the database actually looks like this."
+        nearest_distances, _ = knn_model.kneighbors([encoding], n_neighbors=1)
+        nearest_distance = float(nearest_distances[0][0])
+
+        if confidence >= CONFIDENCE_THRESHOLD and nearest_distance <= MAX_DISTANCE_THRESHOLD:
             name = label_encoder.inverse_transform([best_idx])[0]
         else:
             name = "Unknown"
 
-        results.append({"name": name, "confidence": confidence, "box": box})
+        results.append({
+            "name": name,
+            "confidence": confidence,
+            "distance": nearest_distance,
+            "box": box,
+        })
 
     return results
 
 
 def draw_results(frame, results):
-    """Draw bounding boxes and name+confidence labels on the frame."""
+    """Draw bounding boxes and name+confidence+distance labels on the frame."""
     for result in results:
         top, right, bottom, left = result["box"]
         name = result["name"]
         confidence = result["confidence"]
+        distance = result["distance"]
 
         color = (0, 255, 0) if name != "Unknown" else (0, 0, 255)
-        label = f"{name} ({confidence:.2f})"
+        label = f"{name} ({confidence:.2f}, d={distance:.2f})"
 
         cv2.rectangle(frame, (left, top), (right, bottom), color, 2)
         cv2.rectangle(frame, (left, bottom - 25), (right, bottom), color, cv2.FILLED)

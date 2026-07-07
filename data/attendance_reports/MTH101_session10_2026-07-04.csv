@@ -1,0 +1,6 @@
+course_code,course_name,session_id,session_date,student_name,status,timestamp_marked,confidence
+MTH101,Calculus,10,2026-07-04,abiel,present,2026-07-04 09:04:53,1.0000
+MTH101,Calculus,10,2026-07-04,donald_trump,absent,,
+MTH101,Calculus,10,2026-07-04,elon_musk,absent,,
+MTH101,Calculus,10,2026-07-04,mark_zuckerberg,absent,,
+MTH101,Calculus,10,2026-07-04,paul_biya,absent,,

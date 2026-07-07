@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Face Attendance System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<nav class="navbar">
+    <div class="nav-brand">🎓 Face Attendance System</div>
+    <div class="nav-links">
+        <a href="{{ url_for('index') }}" {% if request.endpoint == 'index' %}class="active"{% endif %}>
+            🏠 Home
+        </a>
+        <a href="{{ url_for('attendance') }}" {% if request.endpoint == 'attendance' %}class="active"{% endif %}>
+            📷 Attendance
+        </a>
+        <a href="{{ url_for('reports') }}" {% if request.endpoint in ['reports', 'report_detail'] %}class="active"{% endif %}>
+            📊 Reports
+        </a>
+        <a href="{{ url_for('manage') }}" {% if request.endpoint == 'manage' %}class="active"{% endif %}>
+            🗂️ Manage Courses
+        </a>
+    </div>
+</nav>
+
+<main class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }}">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+</main>
+
+</body>
+</html>

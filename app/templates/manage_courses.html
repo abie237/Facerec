@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}Manage Courses — Face Attendance System{% endblock %}
+
+{% block content %}
+<h1>🗂️ Manage Courses & Enrollments</h1>
+
+<div class="two-col">
+
+    <!-- LEFT: Add course -->
+    <div class="card">
+        <h2>➕ Add New Course</h2>
+        <form method="POST" action="{{ url_for('add_course') }}">
+            <div class="form-group">
+                <label for="course_code">Course Code</label>
+                <input type="text" name="course_code" id="course_code"
+                       class="form-control"
+                       placeholder="e.g. CSC301"
+                       maxlength="20" required>
+            </div>
+            <div class="form-group">
+                <label for="course_name">Course Name</label>
+                <input type="text" name="course_name" id="course_name"
+                       class="form-control"
+                       placeholder="e.g. Computer Vision"
+                       maxlength="100" required>
+            </div>
+            <button type="submit" class="btn btn-primary btn-full">
+                Add Course
+            </button>
+        </form>
+
+        {% if courses %}
+        <hr>
+        <h3>Existing Courses</h3>
+        <ul class="course-list">
+            {% for course in courses %}
+            <li>
+                <strong>{{ course.course_code }}</strong> — {{ course.course_name }}
+                <small>({{ enrollments[course.course_id]|length }} enrolled)</small>
+            </li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+    </div>
+
+    <!-- RIGHT: Enroll students -->
+    <div class="card">
+        <h2>👥 Enroll Students</h2>
+
+        {% if not courses %}
+            <p class="empty-state">Add a course first.</p>
+        {% elif not all_students %}
+            <p class="empty-state">
+                No students registered yet.
+                Run <code>python ml_pipeline/encode_faces.py</code> to register students.
+            </p>
+        {% else %}
+            <form method="POST" action="{{ url_for('enroll') }}">
+                <div class="form-group">
+                    <label for="enroll_course_id">Select Course</label>
+                    <select name="course_id" id="enroll_course_id"
+                            class="form-control"
+                            onchange="updateCheckboxes(this.value)">
+                        {% for course in courses %}
+                            <option value="{{ course.course_id }}">
+                                {{ course.course_code }} — {{ course.course_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Students</label>
+                    <div class="checkbox-grid">
+                        {% for student in all_students %}
+                        <label class="checkbox-label">
+                            <input type="checkbox"
+                                   name="student_ids"
+                                   value="{{ student.student_id }}"
+                                   class="student-checkbox"
+                                   data-student-id="{{ student.student_id }}">
+                            {{ student.student_name }}
+                        </label>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full">
+                    💾 Save Enrollments
+                </button>
+            </form>
+        {% endif %}
+    </div>
+
+</div>
+
+<!-- Enrollment overview by course -->
+{% if courses %}
+<div class="card">
+    <h2>📋 Current Enrollments</h2>
+    {% for course in courses %}
+    <div class="enrollment-row">
+        <div class="enrollment-course">
+            <strong>{{ course.course_code }}</strong> — {{ course.course_name }}
+        </div>
+        <div class="enrollment-students">
+            {% set enrolled_ids = enrollments[course.course_id] %}
+            {% if enrolled_ids %}
+                {% for student in all_students %}
+                    {% if student.student_id in enrolled_ids %}
+                        <span class="tag tag-primary">{{ student.student_name }}</span>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <span class="empty-state-inline">No students enrolled</span>
+            {% endif %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<!-- JS: pre-check boxes based on current enrollment when course changes -->
+<script>
+    // Store enrollment data from server
+    const enrollments = {{ enrollments | tojson }};
+
+    function updateCheckboxes(courseId) {
+        const enrolled = enrollments[courseId] || [];
+        document.querySelectorAll('.student-checkbox').forEach(cb => {
+            cb.checked = enrolled.includes(parseInt(cb.value));
+        });
+    }
+
+    // Init checkboxes for the first course on page load
+    const firstCourse = document.getElementById('enroll_course_id');
+    if (firstCourse) {
+        updateCheckboxes(firstCourse.value);
+    }
+</script>
+
+{% endblock %}

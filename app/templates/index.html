@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Home — Face Attendance System{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <h1>🎓 Face Attendance System</h1>
+    <p class="subtitle">
+        Class Monitoring System Using Computer Vision
+        for Automated Attendance Management
+    </p>
+
+    <div class="card-grid">
+        <a href="{{ url_for('attendance') }}" class="card card-primary">
+            <div class="card-icon">📷</div>
+            <h2>Attendance</h2>
+            <p>Start a live face recognition session for a course. The system detects and identifies registered students automatically.</p>
+        </a>
+
+        <a href="{{ url_for('reports') }}" class="card card-secondary">
+            <div class="card-icon">📊</div>
+            <h2>Reports</h2>
+            <p>View attendance records from past sessions. Download CSV reports for any session.</p>
+        </a>
+
+        <a href="{{ url_for('manage') }}" class="card card-tertiary">
+            <div class="card-icon">🗂️</div>
+            <h2>Manage Courses</h2>
+            <p>Add courses and enroll registered students. Manage which students belong to which course.</p>
+        </a>
+    </div>
+
+    <div class="tech-stack">
+        <span class="badge">face_recognition (dlib)</span>
+        <span class="badge">OpenCV</span>
+        <span class="badge">KNN (scikit-learn)</span>
+        <span class="badge">SQLite</span>
+        <span class="badge">Flask</span>
+    </div>
+</div>
+{% endblock %}
